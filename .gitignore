@@ -1,0 +1,7 @@
+*.json
+*.cf
+*.toml
+*.ghw
+*.bin
+*.bit
+*.svg
