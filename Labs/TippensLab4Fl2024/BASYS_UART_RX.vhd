@@ -29,7 +29,7 @@ begin
                     clock_count   <=  0;
                     bit_index     <=  0;
                     
-                    if serial_input = '1' then
+                    if serial_input = '0' then
                         rx_state <= RX_Start;
                     else
                         rx_state <= RX_Idle;
