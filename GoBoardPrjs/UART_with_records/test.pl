@@ -14,6 +14,7 @@ if (!$tb_top){
 }
 
 system ("ghdl -i --std=08 *.vhd");
-system ("ghdl -i --std=08 --work=UART \$HOME/Documents/Code/VHDL/libraries/alex_custom/UART/*.vhd ");
-system ("ghdl -m --std=08 top_tb");
-system ("ghdl -r --std=08 top_tb --wave=waveform.ghw");
+system ("ghdl -i --std=08 --work=UART \$HOME/Documents/Code/VHDL/libraries/alex_custom/UART/*.vhd");
+system ("ghdl -i --std=08 --work=TB \$HOME/Documents/Code/VHDL/libraries/alex_tb/*.vhd \$HOME/Documents/Code/VHDL/libraries/alex_tb/UART_tb/*.vhd");
+system ("ghdl -m --std=08 $tb_top");
+system ("ghdl -r --std=08 $tb_top --wave=waveform.ghw");
