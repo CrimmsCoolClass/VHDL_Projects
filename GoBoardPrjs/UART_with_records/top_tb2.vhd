@@ -96,7 +96,7 @@ begin
         alias transmit_outs is <<signal top_inst.TX_MASTER_OUTS  : UART_TX_OUT>>;
     begin
         for i in test_data'range loop
-            check_TX(test_data(i), transmit_outs, BIT_PERIOD);
+            check_TX(test_data(i), transmit_outs, BIT_PERIOD, CLK_PERIOD);
             report "Completed " & to_string(i+1) &  " iteration of txchecker";
         end loop;
         report "Passed all TX Tests";
