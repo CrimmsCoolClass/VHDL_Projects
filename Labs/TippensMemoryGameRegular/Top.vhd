@@ -45,6 +45,8 @@ architecture rtl of Top is
     constant FIVE_HUNDRED_MS  : integer := 50_000_000;
     constant THREE_HUNDRED_MS : integer := 30_000_000;
     constant ONE_HUNDRED_MS   : integer := 10_000_000;
+    constant DBOUNCE          : integer := 1_000_000;
+    
 
     signal ledposition   : integer := 12345;
     signal MSD_segment   : integer := 0;
@@ -55,10 +57,27 @@ architecture rtl of Top is
     signal storage       : storedvalue := (others => (others => '0'));
 
     signal LSFR_register : std_logic_vector(4 downto 1) := (others => '0');
+    signal debounce_sw   : std_logic_vector(15 downto 0) := (others => '0');
 
     signal xnor_wire     : std_logic;
     
 begin
+
+    debounceswitches:process(clk)
+        variable count : integer := 0;
+    begin
+        if rising_edge(clk) then
+            if sw /= debounce_sw and count < DBOUNCE then
+                count := count + 1;
+            elsif count = DBOUNCE then
+                debounce_sw <= sw;
+                count := 0;
+            else
+                count := 0;
+            end if;
+        end if;
+    end process;
+
 
     generatenumber:process(clk,btnD)
     begin
@@ -83,6 +102,7 @@ begin
         elsif rising_edge(clk) then
             case state is
                 when IDLE =>
+                    count := 0;
                     stop_scoring := false;
                     ledposition <= 12345;
                     if btnC = '1' then
@@ -128,7 +148,7 @@ begin
                     end if;
 
                 when NOSWS =>
-                    if sw = "0000000000000000" then
+                    if debounce_sw = "0000000000000000" then
                         if guess_tracker = 1 then
                             state <= GUESS1;
                         elsif guess_tracker = 2 then
@@ -143,12 +163,12 @@ begin
                     end if;
 
                 when GUESS1 =>
-                    if sw /= "0000000000000000" then
+                    if debounce_sw /= "0000000000000000" then
                         for i in 0 to 15 loop
-                            if sw(i) = '1' and i /= to_integer(unsigned(storage(1))) then
+                            if debounce_sw(i) = '1' and i /= to_integer(unsigned(storage(1))) then
                                 state <= LOSE;
                                 exit;
-                            elsif sw(i) = '1' and i = to_integer(unsigned(storage(1))) then
+                            elsif debounce_sw(i) = '1' and i = to_integer(unsigned(storage(1))) then
                                 guess_tracker := guess_tracker + 1;
                                 state <= NOSWS;
                             end if;
@@ -156,12 +176,12 @@ begin
                     end if;
 
                 when GUESS2 =>
-                    if sw /= "0000000000000000" then
+                    if debounce_sw /= "0000000000000000" then
                         for i in 0 to 15 loop
-                            if sw(i) = '1' and i /= to_integer(unsigned(storage(2))) then
+                            if debounce_sw(i) = '1' and i /= to_integer(unsigned(storage(2))) then
                                 state <= LOSE;
                                 exit;
-                            elsif sw(i) = '1' and i = to_integer(unsigned(storage(2))) then
+                            elsif debounce_sw(i) = '1' and i = to_integer(unsigned(storage(2))) then
                                 guess_tracker := guess_tracker + 1;
                                 state <= NOSWS;
                             end if;
@@ -169,12 +189,12 @@ begin
                     end if;
 
                 when GUESS3 =>
-                    if sw /= "0000000000000000" then
+                    if debounce_sw /= "0000000000000000" then
                         for i in 0 to 15 loop
-                            if sw(i) = '1' and i /= to_integer(unsigned(storage(3))) then
+                            if debounce_sw(i) = '1' and i /= to_integer(unsigned(storage(3))) then
                                 state <= LOSE;
                                 exit;
-                            elsif sw(i) = '1' and i = to_integer(unsigned(storage(3))) then
+                            elsif debounce_sw(i) = '1' and i = to_integer(unsigned(storage(3))) then
                                 guess_tracker := guess_tracker + 1;
                                 state <= NOSWS;
                             end if;
@@ -182,12 +202,12 @@ begin
                     end if;
 
                 when GUESS4 =>
-                    if sw /= "0000000000000000" then
+                    if debounce_sw /= "0000000000000000" then
                         for i in 0 to 15 loop
-                            if sw(i) = '1' and i /= to_integer(unsigned(storage(4))) then
+                            if debounce_sw(i) = '1' and i /= to_integer(unsigned(storage(4))) then
                                 state <= LOSE;
                                 exit;
-                            elsif sw(i) = '1' and i = to_integer(unsigned(storage(4))) then
+                            elsif debounce_sw(i) = '1' and i = to_integer(unsigned(storage(4))) then
                                 guess_tracker := guess_tracker + 1;
                                 state <= NOSWS;
                             end if;
@@ -195,12 +215,12 @@ begin
                     end if;
 
                 when GUESS5 =>
-                    if sw /= "0000000000000000" then
+                    if debounce_sw /= "0000000000000000" then
                         for i in 0 to 15 loop
-                            if sw(i) = '1' and i /= to_integer(unsigned(storage(5))) then
+                            if debounce_sw(i) = '1' and i /= to_integer(unsigned(storage(5))) then
                                 state <= LOSE;
                                 exit;
-                            elsif sw(i) = '1' and i = to_integer(unsigned(storage(5))) then
+                            elsif debounce_sw(i) = '1' and i = to_integer(unsigned(storage(5))) then
                                 guess_tracker := guess_tracker + 1;
                                 state <= ROUNDEND;
                             end if;
