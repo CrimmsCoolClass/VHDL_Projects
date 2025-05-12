@@ -132,8 +132,8 @@ begin
                     elsif count < (timing_magic + timing_magic) - 1 then --nextpnr flails and dies when you try to multiply variables
                         ledposition <= to_integer(unsigned(storage(2)));
                         count := count + 1;
-                    elsif count < (timing_magic + timing_magic + timing_magic) - 1 then
-                        ledposition <= to_integer(unsigned(storage(3)));
+                    elsif count < (timing_magic + timing_magic + timing_magic) - 1 then --nextpnr-xilinx apparently has almost no support for DSP
+                        ledposition <= to_integer(unsigned(storage(3))); --and if it did, its most likely a verilog thing only.
                         count := count + 1;
                     elsif count < (timing_magic + timing_magic + timing_magic + timing_magic) - 1 then
                         ledposition <= to_integer(unsigned(storage(4)));
