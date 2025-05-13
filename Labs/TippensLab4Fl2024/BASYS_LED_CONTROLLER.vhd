@@ -31,7 +31,7 @@ architecture rtl of BASYS_LED_CONTROLLER is
             when "0011000000110110" => return  6;
             when "0011000000110111" => return  7;
             when "0011000000111000" => return  8;
-            when "0011000100111001" => return  9;
+            when "0011000000111001" => return  9;
             when "0011000100110000" => return 10;
             when "0011000100110001" => return 11;
             when "0011000100110010" => return 12;
