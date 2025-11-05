@@ -18,3 +18,4 @@ system ("ghdl -i --std=08 --work=UART \$HOME/Documents/Code/VHDL/libraries/alex_
 system ("ghdl -i --std=08 --work=TB \$HOME/Documents/Code/VHDL/libraries/alex_tb/*.vhd \$HOME/Documents/Code/VHDL/libraries/alex_tb/UART_tb/*.vhd");
 system ("ghdl -m --std=08 $tb_top");
 system ("ghdl -r --std=08 $tb_top --wave=waveform.ghw");
+

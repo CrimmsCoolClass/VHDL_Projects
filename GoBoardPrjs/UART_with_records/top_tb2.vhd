@@ -24,9 +24,7 @@ architecture test of top_tb2 is
     signal serial_in  : std_logic := '1';
     signal serial_out : std_logic;
 
-    signal stop_sim  : boolean := false;
-
-    constant test_data : UART_Stimuli_data := (
+    constant TEST_DATA : UART_Stimuli_data := (
     (x"4C"),(x"30"),(x"31"),(x"32"),(x"33"),(x"4D")
     );
 
@@ -52,24 +50,20 @@ begin
         o_Segment2_F => open,
         o_Segment2_G => open 
     );
-    clocking:process
-    begin
-        while stop_sim = false loop
-            wait for CLK_PERIOD / 2;
-            clk <= not clk;
-        end loop;
-        wait;
-    end process;
 
-    stimulation:process
+    clocking : block begin
+        clk <= not clk after CLK_PERIOD / 2;
+    end block;
+
+    stimulation : process
         alias record_bring is <<signal top_inst.TX_MASTER_OUTS : UART_TX_OUT>>;
     begin
         wait until rising_edge(clk);
 
-        for i in test_data'range loop
+        for i in TEST_DATA'range loop
             report "Writing to UART iteration: " & to_string(i+1);
 
-            write_UART(test_data(i), serial_in, BIT_PERIOD);
+            write_UART(TEST_DATA(i), serial_in, BIT_PERIOD);
             wait until record_bring.TX_DONE = '1';
         end loop;
 
@@ -83,9 +77,9 @@ begin
         alias record_bring is <<signal top_inst.RX_MASTER_OUTS : UART_RX_OUT>>;
         alias receive_byte is record_bring.RX_BYTE;
     begin
-        for i in test_data'range loop
+        for i in TEST_DATA'range loop
             wait until record_bring.RX_STOPBIT = '1';
-            assert_eq("Receive matching check", receive_byte, test_data(i));
+            assert_eq("Receive matching check", receive_byte, TEST_DATA(i));
         end loop;
         report "Passed all RX Tests";
         wait;
@@ -95,12 +89,13 @@ begin
     txchecker:process
         alias transmit_outs is <<signal top_inst.TX_MASTER_OUTS  : UART_TX_OUT>>;
     begin
-        for i in test_data'range loop
-            check_TX(test_data(i), transmit_outs, BIT_PERIOD, CLK_PERIOD);
+        for i in TEST_DATA'range loop
+            check_TX(TEST_DATA(i), transmit_outs, BIT_PERIOD, CLK_PERIOD);
             report "Completed " & to_string(i+1) &  " iteration of txchecker";
         end loop;
         report "Passed all TX Tests";
-        stop_sim <= true;
+        std.env.finish;
+        --stop_sim <= true;
         wait;
     end process;
 
